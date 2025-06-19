@@ -3,6 +3,3 @@ moviepy
 dropbox
 yt-dlp
 ffmpeg-python
-openai-whisper
-torch
-torchaudio
