@@ -1,6 +1,8 @@
 flask
 moviepy
-openai-whisper
 dropbox
 yt-dlp
 ffmpeg-python
+openai-whisper
+torch
+torchaudio
