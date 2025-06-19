@@ -1,45 +1,44 @@
 from flask import Flask, request, jsonify
-import os, random, subprocess, dropbox
+import os, subprocess, random, dropbox
 from moviepy.editor import VideoFileClip
 
 app = Flask(__name__)
 
-DROPBOX_ACCESS_TOKEN = "sl.u.AFzj2LatLguSL5olZiWrBMu8egV_ZUGapiu65rnbXwa_JBP2wxLWzcQiEte9O6z1xTI1zsAUq3HoUFCHjCBDafXvUff05ua6GnwqVZdFrP37lcMsPav1RrdpOGZ_WsbUkJUZaA4p4KbCiHBbw5wYB4UQ7kocw0J3-aQg0v1oq8xIGYnbhJLSGsN4D6-sUz9PnyWcLvbVk1DkkMSU10PLc9f9MyFSK5whHFA91YDp7Fng-uz70gWnyaDpr90g93pnBQSMsLpo5T2LbL1Y0bYDoKhuPD8FrejuiRy9vSHMA0TU7eXojCW9x21vbUdYtGzzyNRqjmU_JLnQwCcPmWv_7udFOCcAUIr2aZM_eAEtbBDhz0eh3C7OieTHygQU3YH56yiGW3TT8lO9cS_A-p5Di7wfLbhe3X_2jIr-atPerPnjjzCOIsKLaS2Rw4bVFFeAHBC-VFuFMl849eVC2XiIagsAzAwoYjEFDnIYVFvFlQkxreIICkEcCNa0iMVr4Gc1GS165xu4k939hayGyXgqrcBrrLwTuNRsaY9aRliPozOFIJ6GjxXVclLkxZl32CgEpJ6DGTuLQzvqcM5fi2d33QrUuZA1AtEotmrRY0FXjMOnQzvQM7E7w7nOGKICAi72hfWABjllmhfwaUhrZHKNqlx3M37CDMrUR7uzNLGOIOcycQu2puW-fZWtlSfnxLVuBnRCFCnQCtTd8S0XNNEtY3Wg8CzVWa_qabuTalUVnroGC1oLKFY0NxdobA7-cvvSPHdXN97Vyp5YP36kcR0DeqPeEj_f0Pja5KLTLWzy2bKKU7fI2brPC3VcXby542_k7xLmHer9pdm1VbDvRFiuDdiSeO_ZDp-eAWqFHG0CNiZDeIDRc0G6cMBGS3Qh_YQ8hLEsg2ksyTDzaPT4X4WudMvC6a3YFlPH6Z8vnYAu6hX4OgnBbjmhsqz0278mZd1QWilAEX1ONbEGiLB5gef5oLHm0oURe7-9n9K8jqQe4AA49Mn-zg5BNsNl1nihL_UaDicDSo8oMju2PgKKc9U4nRowCQP9gaKLQUNla2YNwrXi5v4GurwrKXitcyszm271lu1KSjvnFUin6Dy3CC_JlCIPegDKyct9JWdKaDQp3t6AiHhkikjenKn9ax79mlHJhu1ULhTozGl41yfFvQC5cQCyxXhKcIAOgz3XrTYMp8gVrRQwrSU2iixgjdzQbl9199ea3JCYNhXJxv5oNOckGMyJZ1RflwXdpS5SsU2SKEKcx7szgTydf5L77wraM8NtxSvaWfgcuaayBfccAkC3F01z"
+DROPBOX_ACCESS_TOKEN = "sl.u.AFyc1RUpPKhyon5bXl1JplQj0dSNlbAch2Mv-jPHzb1lGdfHAh3DNrkOA0EBs_lmTzlMWykgkzYEs0ZFTYQg8YKvn99jfP1W5eKnNfUicB0uQvK1U9qU45QstYpZ_AT18ysonunXMh29dI7mVSe1rPDhAfM7eC25tRd7H03KLL3DQfJfyhTN9SXKQ1aQ5UgbXjuu6PEOfXwPvPkjpXY19OiQb2PcTPFelHk2AL5UsAKRRB3pbSp_TMjfqi4bnQTmvFUoTfeElmzARQnudD7QskyDYOqYCJ1kpEPIbMpUA7XFsGcQXfI-PCEqC9quK687aoripT_Iko1VJVQLXb8I_-S-Fw4SYmuIgqgQVM_grJt--9CtD7KcKl-eqpUei8KUVHcZnJ-y12UYuiGCwLg8Ma22SYzUVhzfJnFJVQagGkXK-M09wBN08xsUieAPHRQtHWVCZcJopiBBPIURGDh5qHyiGc7CGhOw3K_w0XutdD5nNfmEyW9V4FPAFOWuIOnztlg71u7NQKlBAkOVsnjdXRVE7UShTKK1343IZWlgkxNBXcxKBnsyukUhrJMIABoT4jBxYfN7iBBufb4bRzu0e3WHUX9QeIX6uZI7_OWLAaShaIMkn2ZO4cmHmm2PwDwDSLEzENTbTNxsl729yBacdvqhZ-WjjopKwnUI8YY5xm_PUfxvT6X0n9hJOsX9U7Vo475UjrlhIeKfKS6YOnD929UUTasqyYN0f8NUgDUH1Go5J1UZXo0EIalSGJioJB7hm-cLSnxgVDec8SR2gsAODvyJoSd2lVf7wXSZPm-Lbl1sueIvsISy0vJkQ0X-mBNNlSwgmtpzGK0l0Z5vsRRLW_sYEf-6QCLfL5U3V4OirvBZk4W1mDkNnxmjvfca_RCqx1QzE1JybYqxJ3NW-5B0wRK0uRyVoHxUk5ZGNRpj8ifj7j-_U-EkAzwb0HiZkBd-ZfCbk0eEky0hf7PNJbj6qkyQm7VCZIBqOf0WWENeQT4KWU0ITHKXXJFSckWVC439V00WMiVOK7rhOcQrjvWwLxSvb2gnE3N3RGodeZkI2zQZ0siG4fO1dBqm_X96xnSXkoc6eXjBp05kkYOpOdwD-wCHlIkFyGjl9EiquzPIMQiyJLV3mjlKCCDppxe6B-oItO1QNGi5A1DST3AtVgN23cEfZtx7WCWyMsMZQX3Y06ign4ONLZSmKs6AvQF44zuzXDnr-UbsuWMhhO_nLkS_1ipgGNtojAGd_3k2k1A4bWW05xdGvfLru4vTX9dEHTpG6nnoeB4SQGvs75mWPkpFcS-b"
 
 @app.route("/process", methods=["POST"])
-def process_video():
+def process():
     data = request.get_json()
     url = data.get("video_url")
     if not url:
-        return jsonify({"error": "No video_url provided"}), 400
+        return jsonify({"error": "Missing video_url"}), 400
 
+    # Download
     video_id = str(random.randint(1000, 9999))
     filename = f"{video_id}.mp4"
     subprocess.run(["yt-dlp", "-f", "best[height<=1080]", "-o", filename, url])
 
+    # Clip
     clip = VideoFileClip(filename)
     start = 0 if clip.duration <= 60 else random.randint(0, int(clip.duration - 60))
-    short_clip = clip.subclip(start, start + 60)
-
+    subclip = clip.subclip(start, start + 60)
     short_filename = f"clip_{video_id}.mp4"
-    short_clip.write_videofile(short_filename, fps=30)
+    subclip.write_videofile(short_filename, fps=30)
 
+    # Upload to Dropbox
     dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
-    dropbox_path = f"/mrbeast_reels/{short_filename}"
+    path = f"/clips/{short_filename}"
     with open(short_filename, "rb") as f:
-        dbx.files_upload(f.read(), dropbox_path, mode=dropbox.files.WriteMode.overwrite)
+        dbx.files_upload(f.read(), path, mode=dropbox.files.WriteMode.overwrite)
+    shared = dbx.sharing_create_shared_link_with_settings(path)
+    link = shared.url.replace("?dl=0", "?raw=1")
 
-    shared_link = dbx.sharing_create_shared_link_with_settings(dropbox_path)
-    public_url = shared_link.url.replace("?dl=0", "?raw=1")
-
+    # Cleanup
     os.remove(filename)
     os.remove(short_filename)
 
-    return jsonify({"video_url": public_url})
+    return jsonify({"video_url": link})
 
 @app.route("/")
 def home():
-    return "Video Clipper API is live"
-
-if __name__ == "__main__":
-    app.run()
+    return "API is live"
