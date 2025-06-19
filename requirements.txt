@@ -1,0 +1,6 @@
+flask
+moviepy
+openai-whisper
+dropbox
+yt-dlp
+ffmpeg-python
